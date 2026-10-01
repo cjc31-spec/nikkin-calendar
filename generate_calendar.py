@@ -24,8 +24,8 @@ import jpholiday
 from playwright.sync_api import sync_playwright
 
 # ─── 設定 ────────────────────────────────────
-START_YEAR, START_MONTH = 2026, 4
-END_YEAR,   END_MONTH   = 2027, 3
+START_YEAR, START_MONTH = 2026, 10
+END_YEAR,   END_MONTH   = 2027, 9
 
 BASE_DIR   = os.path.dirname(os.path.abspath(__file__))
 OUTPUT_DIR = os.path.join(BASE_DIR, "output")
@@ -66,8 +66,12 @@ COMPANY_HOLIDAYS = {
     datetime.date(2026, 12, 29),
     datetime.date(2026, 12, 30),
     datetime.date(2026, 12, 31),
-    # 年始休み
-    datetime.date(2027, 1, 4),    # 年始休業
+    # 2026年10月〜2027年9月 年間カレンダー（有給消化日）
+    datetime.date(2027, 4, 30),
+    datetime.date(2027, 5, 6),
+    datetime.date(2027, 5, 7),
+    datetime.date(2027, 8, 12),
+    datetime.date(2027, 8, 13),
 }
 
 # ─── 祝日取得 ────────────────────────────────
@@ -396,8 +400,8 @@ def main():
             # PNG スクリーンショット
             page.goto(f"file://{html_path}")
             page.wait_for_load_state("networkidle")
-            # コンテンツの実際の高さを取得してクリップ
-            content_height = page.evaluate("document.querySelector('.calendar').offsetHeight")
+            # コンテンツの実際の高さを取得してクリップ（公開中の月と揃えるため最低1200px）
+            content_height = max(page.evaluate("document.querySelector('.calendar').offsetHeight"), 1200)
             page.screenshot(path=png_path, full_page=False,
                             clip={"x": 0, "y": 0, "width": 840, "height": content_height})
 
